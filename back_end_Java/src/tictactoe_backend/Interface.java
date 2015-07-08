@@ -33,7 +33,7 @@ public class Interface {
 			else
 				placePlayerPiece(player2);
 
-			player1Turn = !player1Turn;
+			player1Turn = !player1Turn;		// toggle
 			printBoard(board);
 			turnCount++;
 
@@ -80,18 +80,10 @@ public class Interface {
 		while (invalidInput) {
 			System.out.println("Enter row and column no. where you want to place your mark (Top left is [1,1])");
 
-			int row = in.nextInt();
-			int col = in.nextInt();
-			if (row > SIZE_OF_BOARD || col > SIZE_OF_BOARD || row < 1 || col < 1) {
-				System.out.println("Invalid move, out of bounds.");
-			}
-			if (board[row][col] == ' ') {
-				board[row][col] = piece; // Possible redundancy here
-				player.setPiece(row, col); // ^^^^^^^^^^^^^^^^^^^^^^^^
-				invalidInput = false;
-			} else {
-				System.out.println("Invalid move, that location is not empty.");
-			}
+			int row = in.nextInt() - 1;
+			int col = in.nextInt() - 1;
+
+			invalidInput = !(player.setPiece(row, col));	// callee returns true if success 
 		}
 	}
 

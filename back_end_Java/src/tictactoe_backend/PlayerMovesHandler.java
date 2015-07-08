@@ -15,8 +15,7 @@ public class PlayerMovesHandler {
 	{
 		board = board_; 
 		playerPiece = piece_;
-		
-		
+		clearBoard();		
 	}
 	
 	
@@ -33,9 +32,19 @@ public class PlayerMovesHandler {
 		board = board_;
 	}
 	
-	public char[][] setPiece(int row, int col){
-		board[row][col] = playerPiece;
-		return getBoard();
+	public boolean setPiece(int row, int col){
+		if (row >= SIZE_OF_BOARD || col >= SIZE_OF_BOARD || row < 0 || col < 0) {
+			System.out.println("Invalid move, out of bounds.");
+			return false;
+		}
+		if (board[row][col] == ' ') {
+			board[row][col] = playerPiece;
+			return true;
+		} else {
+			System.out.println("Invalid move, that location is not empty.");
+			return false;
+		}
+
 	}
 	
 	private void clearBoard()	// idk if I will ever use it here 
