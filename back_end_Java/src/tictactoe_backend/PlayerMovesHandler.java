@@ -1,5 +1,7 @@
 package tictactoe_backend;
-/*	Date created : July 8, 2015
+/*	
+ * 	Author: Tasdiq Ameem
+ * 	Date created : July 8, 2015
  * 	This class handles human player's moves.
  * 	This can be instantiated twice in 2 player games 
  */
@@ -15,7 +17,7 @@ public class PlayerMovesHandler {
 	{
 		board = board_; 
 		playerPiece = piece_;
-		clearBoard();		
+		clearBoard();		// WARNING: may fuck up other things. 
 	}
 	
 	
