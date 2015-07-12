@@ -143,3 +143,6 @@ local.properties
 # PDT-specific
 .buildpath
 
+*.gradle
+*.pro
+*.properties
