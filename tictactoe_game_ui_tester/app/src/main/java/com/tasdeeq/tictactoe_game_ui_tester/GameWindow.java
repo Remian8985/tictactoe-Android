@@ -15,6 +15,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.view.ViewTreeObserver;
+import android.widget.TextView;
 
 
 public class GameWindow extends ActionBarActivity {
@@ -28,19 +29,24 @@ public class GameWindow extends ActionBarActivity {
 	// on touch and on press for each of 9 buttons		**done**
 	// on touch check if the place is empty (if yes return false)
 	// ^if false, initiate background processing and place piece
-	// Visually place piece
+	// Visually place piece		**done**
 
 	// Finally:
-	// Make buttons invisible with no text
+	// Make buttons invisible with no text	**done**
 
 
 
-	private boolean playerOneMove = true;
+	private boolean playerOneMove = false;	// turn changes at first
+	String playerOneName = "Player 1";	// default name
+	String playerTwoName = "Player 2"; 	// defualt name
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game_window);
+
+
+		playerOneMove = false;
 
 		final ImageView gridImage = (ImageView) findViewById(R.id.gridImage);
 		ViewTreeObserver vto = gridImage.getViewTreeObserver();
@@ -59,145 +65,23 @@ public class GameWindow extends ActionBarActivity {
 			}
 		});
 
-		// Set on touch listeners for the buttons:
-		// touch listeners are  for debugging purpose only.
-		// Everything can be handled by the easier click listener
-		Button button00 = (Button) findViewById(R.id.button00);
-		Button button01 = (Button) findViewById(R.id.button01);
-		Button button02 = (Button) findViewById(R.id.button02);
-		Button button10 = (Button) findViewById(R.id.button10);
-		Button button11 = (Button) findViewById(R.id.button11);
-		Button button12 = (Button) findViewById(R.id.button12);
-		Button button20 = (Button) findViewById(R.id.button20);
-		Button button21 = (Button) findViewById(R.id.button21);
-		Button button22 = (Button) findViewById(R.id.button22);
-
-		button00.setOnTouchListener(onTouchListener);
-		button01.setOnTouchListener(onTouchListener);
-		button02.setOnTouchListener(onTouchListener);
-		button10.setOnTouchListener(onTouchListener);
-		button11.setOnTouchListener(onTouchListener);
-		button12.setOnTouchListener(onTouchListener);
-		button20.setOnTouchListener(onTouchListener);
-		button21.setOnTouchListener(onTouchListener);
-		button22.setOnTouchListener(onTouchListener);
-
-	//	button00.setBackgroundResource(getImageResource(playerOneMove));
-	//	button00.setEnabled(false);
 	}
 
 
 
-		public void buttonOnClick(View v) {
-			int viewId = v.getId();
+	public void buttonOnClick(View v) {
+		int viewId = v.getId();
 
-			Log.d(TAG, "Button clicked : " + viewId);		// debug code
-			switch(viewId){
-				case R.id.button00:
-					//DO something
-					placeImage((Button) v);
-					break;
-				case R.id.button01:
-					placeImage((Button) v);
-					v.setEnabled(false);
-					break;
-				case R.id.button02:
-					//DO something
-					placeImage((Button) v);
-					v.setEnabled(false);
-					break;
-				case R.id.button10:
-					//DO something
-					placeImage((Button) v);
-					v.setEnabled(false);
-					break;
-				case R.id.button11:
-					//DO something
-					placeImage((Button) v);
-					v.setEnabled(false);
-					break;
-				case R.id.button12:
-					//DO something
-					placeImage((Button) v);
-					v.setEnabled(false);
-					break;
-				case R.id.button20:
-					//DO something
-					placeImage((Button) v);
-					v.setEnabled(false);
-					break;
-				case R.id.button21:
-					//DO something
-					placeImage((Button) v);
-					v.setEnabled(false);
-					break;
-				case R.id.button22:
-					//DO something
-					placeImage((Button) v);
-					v.setEnabled(false);
-					break;
-				default:
-					//DO something
-					break;
-			}
-
-		}
+		Log.d(TAG, "Button clicked : " + viewId);		// debug code
 
 
+		placeImage((Button) v);
+		turnChange();
 
 
+	}
 
- 	// This touch listener is for debugging purpose only.
-	// Everything can be handled by the easier click listener
-	private View.OnTouchListener onTouchListener = new View.OnTouchListener() {
-		@Override
-		public boolean onTouch(View v, MotionEvent event) {
-			// Must return false
 
-			int id = v.getId();
-			if (event.getAction() == MotionEvent.ACTION_DOWN ) { // button is pressed "down"
-				boolean isInvalid = true;
-
-				switch (v.getId()) {
-					case R.id.button00:
-						isInvalid =  isOccupied(0, 0);
-						break;
-					case R.id.button01:
-						isInvalid =  isOccupied(0, 1);
-						break;
-					case R.id.button02:
-						isInvalid =  isOccupied(0, 2);
-						break;
-					case R.id.button10:
-						isInvalid =  isOccupied(1, 0);
-						break;
-					case R.id.button11:
-						isInvalid =  isOccupied(1, 1);
-						break;
-					case R.id.button12:
-						isInvalid =  isOccupied(1, 2);
-						break;
-					case R.id.button20:
-						isInvalid =  isOccupied(2, 0);
-						break;
-					case R.id.button21:
-						isInvalid =  isOccupied(2, 1);
-						break;
-					case R.id.button22:
-						isInvalid =  isOccupied(2, 2);
-						break;
-					default:
-						isInvalid =  true;
-				}
-				Log.d(TAG, "Button touched : " + id);		// debug code
-				return false;
-			}
-			else {
-				Log.d(TAG, "Button released : " + id);		// debug code
-				return false;
-			}
-		}
-	};
 
 	private void changeButtonBackground(Button button, int imageID){
 		button.setBackgroundResource(imageID);
@@ -220,15 +104,24 @@ public class GameWindow extends ActionBarActivity {
 	private  void placeImage(Button button){
 		button.setBackgroundResource(getImageResource(playerOneMove));
 		button.setEnabled(false);
+	}
+
+	private void turnChange(){
 		playerOneMove = !playerOneMove;
+		boolean player1Move = playerOneMove; // making local because i'm paranoid
+		TextView statusText = (TextView) findViewById(R.id.statusText);
+		if(player1Move){
+			statusText.setText(playerOneName + "\'s turn! ");
+		}
+		else{
+			statusText.setText(playerTwoName + "\'s turn! ");
+		}
 	}
 
 
 
 	// Changes all the input buttons to be the right size
 	private void resizeButtons(int length) {
-		// Yes, I know things are repeated here, I suck.
-
 		Button button00 = (Button) findViewById(R.id.button00);
 		Button button01 = (Button) findViewById(R.id.button01);
 		Button button02 = (Button) findViewById(R.id.button02);
@@ -251,7 +144,7 @@ public class GameWindow extends ActionBarActivity {
 	}
 
 
-	// ONLY FOR RELATIVE LAYOUT!
+	// ONLY FOR RELATIVE LAYOUT! ...
 	private void adjustButtonSize(Button button, int height, int width) {
 		RelativeLayout.LayoutParams buttonParams = (RelativeLayout.LayoutParams) button.getLayoutParams();
 		buttonParams.height = height;
@@ -259,9 +152,12 @@ public class GameWindow extends ActionBarActivity {
 		button.setLayoutParams(buttonParams);
 	}
 
+
+	// defined as one-third for now
 	private int getButtonLength(int args){
 		return args/3;
 	}
+
 
 	private boolean isOccupied(int i, int j){
 		// TO DO

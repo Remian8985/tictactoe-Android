@@ -45,7 +45,8 @@
 			android:id="@+id/button00"
 			android:layout_above="@+id/button11"
 			android:layout_toLeftOf="@+id/button11"
-			android:onClick="buttonOnClick"/>
+			android:onClick="buttonOnClick"
+			android:layout_margin="-4dp"/>
 
 		<Button
 			android:layout_width="wrap_content"
@@ -125,7 +126,15 @@
 			android:layout_toRightOf="@+id/button11"
 			android:onClick="buttonOnClick"/>
 
-
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceLarge"
+			android:text="Status goes here"
+			android:id="@+id/statusText"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"
+			android:layout_marginTop="28dp"/>
 
 
 	</RelativeLayout>
