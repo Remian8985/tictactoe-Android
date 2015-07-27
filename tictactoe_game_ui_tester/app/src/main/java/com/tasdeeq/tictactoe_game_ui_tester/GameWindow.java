@@ -1,6 +1,7 @@
 package com.tasdeeq.tictactoe_game_ui_tester;
 
 import android.annotation.TargetApi;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
@@ -32,6 +33,9 @@ public class GameWindow extends ActionBarActivity {
 	// Finally:
 	// Make buttons invisible with no text
 
+
+
+	private boolean playerOneMove = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -78,45 +82,59 @@ public class GameWindow extends ActionBarActivity {
 		button21.setOnTouchListener(onTouchListener);
 		button22.setOnTouchListener(onTouchListener);
 
-
+	//	button00.setBackgroundResource(getImageResource(playerOneMove));
 	//	button00.setEnabled(false);
 	}
 
 
 
-		private void buttonOnClick(View v) {
-			int id = v.getId();
-			Drawable imageDrawable = getDrawableRes(true);
-			Log.d(TAG, "Button clicked : " + id);		// debug code
-			switch(v.getId()){
+		public void buttonOnClick(View v) {
+			int viewId = v.getId();
+
+			Log.d(TAG, "Button clicked : " + viewId);		// debug code
+			switch(viewId){
 				case R.id.button00:
 					//DO something
-					v.setEnabled(false);
+					placeImage((Button) v);
 					break;
 				case R.id.button01:
-					Button temp = (Button) findViewById(R.id.button00);
-					temp.performClick();
+					placeImage((Button) v);
+					v.setEnabled(false);
 					break;
 				case R.id.button02:
 					//DO something
+					placeImage((Button) v);
+					v.setEnabled(false);
 					break;
 				case R.id.button10:
 					//DO something
+					placeImage((Button) v);
+					v.setEnabled(false);
 					break;
 				case R.id.button11:
 					//DO something
+					placeImage((Button) v);
+					v.setEnabled(false);
 					break;
 				case R.id.button12:
 					//DO something
+					placeImage((Button) v);
+					v.setEnabled(false);
 					break;
 				case R.id.button20:
 					//DO something
+					placeImage((Button) v);
+					v.setEnabled(false);
 					break;
 				case R.id.button21:
 					//DO something
+					placeImage((Button) v);
+					v.setEnabled(false);
 					break;
 				case R.id.button22:
 					//DO something
+					placeImage((Button) v);
+					v.setEnabled(false);
 					break;
 				default:
 					//DO something
@@ -181,28 +199,29 @@ public class GameWindow extends ActionBarActivity {
 		}
 	};
 
+	private void changeButtonBackground(Button button, int imageID){
+		button.setBackgroundResource(imageID);
+	}
 
-	private Drawable getDrawableRes(boolean player1Move){
+
+	private int getImageResource(boolean player1Move){
 		final String noughtStr = "@drawable/nought";
 		final String crossStr = "@drawable/cross";
-		String uri = noughtStr; // default , player1 move
+		String uri = crossStr; // default , player1 move
 		if (!player1Move)
-			uri = crossStr;
+			uri = noughtStr;
 
 		int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-		Drawable res;
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-			res = getDrawable(imageResource);
-		else	// because the following is deprecated apparently
-			res = getResources().getDrawable(imageResource);
-
-		return res;
+		return imageResource;
 	}
 
 
 
-
-
+	private  void placeImage(Button button){
+		button.setBackgroundResource(getImageResource(playerOneMove));
+		button.setEnabled(false);
+		playerOneMove = !playerOneMove;
+	}
 
 
 
