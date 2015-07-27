@@ -1,6 +1,7 @@
 package com.tasdeeq.tictactoe_game_ui_tester;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
@@ -18,7 +19,7 @@ import android.view.ViewTreeObserver;
 import android.widget.TextView;
 
 
-public class GameWindow extends ActionBarActivity {
+public class GameWindow extends Activity {
 
 	final String TAG = "com.tasdeeq.tictactoe_game_ui_tester";
 	// CREATE GAME MODE OBJECTS HERE
@@ -36,7 +37,7 @@ public class GameWindow extends ActionBarActivity {
 
 
 
-	private boolean playerOneMove = false;	// turn changes at first
+	private boolean playerOneMove = true;
 	String playerOneName = "Player 1";	// default name
 	String playerTwoName = "Player 2"; 	// defualt name
 
@@ -46,7 +47,7 @@ public class GameWindow extends ActionBarActivity {
 		setContentView(R.layout.activity_game_window);
 
 
-		playerOneMove = false;
+		playerOneMove = true;
 
 		final ImageView gridImage = (ImageView) findViewById(R.id.gridImage);
 		ViewTreeObserver vto = gridImage.getViewTreeObserver();
