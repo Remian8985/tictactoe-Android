@@ -1,6 +1,7 @@
 package com.tasdeeq.tictactoe_game_ui_tester;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -44,7 +45,13 @@ public class GameWindow extends Activity {
 
 		playerOneMove = true;
 		updateStatus();
-	//	setGameModeImage(1);
+		// Set the image game mode:
+		// 1:easy, 2:medium, 3:hard, other:human
+		setGameModeImage(1);		// 1 is placeholder for now
+		// instantiate classes based on ^that
+		// TO DO
+		// ..
+
 
 		final ImageView gridImage = (ImageView) findViewById(R.id.gridImage);
 		ViewTreeObserver vto = gridImage.getViewTreeObserver();
@@ -62,7 +69,7 @@ public class GameWindow extends Activity {
 					buttonLength = getButtonLength(imageWidth);
 				else                                     // Landscape. Critical length = height
 					buttonLength = getButtonLength(imageHeight);
-				resizeButtons(buttonLength);
+				adjustButtons(buttonLength);
 
 				return true;
 			}
@@ -110,7 +117,6 @@ public class GameWindow extends Activity {
 
 		updateStatus();
 
-
 	}
 
 	private void updateStatus(){
@@ -131,7 +137,6 @@ public class GameWindow extends Activity {
 
 	public void buttonOnClick(View v) {
 		int viewId = v.getId();
-
 		Log.d(TAG, "Button clicked : " + viewId);		// debug code
 		v.setBackgroundResource(getImageResource(playerOneMove));
 		v.setEnabled(false);
@@ -170,30 +175,29 @@ public class GameWindow extends Activity {
 	}
 
 	private void setGameModeImage(int gameMode){
-		final String vsHuman = "@drawable/vs_human" ;
-		final String vsAIeasy = "@drawable/vs_computer_a" ;
-		final String vsAImedium = "@drawable/vs_computer_b" ;
-		final String vsAIhard = "@drawable/vs_computer_c" ;
-		String uri  = vsHuman;
+		final int vsHuman = R.drawable.vs_human ;
+		final int vsAIeasy = R.drawable.vs_computer_a ;
+		final int vsAImedium = R.drawable.vs_computer_b;
+		final int vsAIhard = R.drawable.vs_computer_c ;
+
+		int imageID = vsHuman;
 
 		switch (gameMode){
 			case 1:
-				uri = vsAIeasy;
+				imageID = vsAIeasy;
 				break;
 			case 2:
-				uri = vsAImedium;
+				imageID = vsAImedium;
 				break;
 			case 3:
-				uri = vsAIhard;
+				imageID = vsAIhard;
 				break;
 			default:
 				break;
 		}
-//		int imageResource = getResources().getIdentifier(vsAImedium, null, getPackageName());
-//		int imageResource = getResources().getIdentifier(uri, null, getPackageName());
-//		ImageView gameModeImage = (ImageView) findViewById(R.id.gameModeImage);
-//		gameModeImage.setImageResource(imageResource);
-	//	gameModeImage.setImageDrawable(getResources().getDrawable(R.drawable.vs_computer_c));
+
+		ImageView gameModeImage = (ImageView) findViewById(R.id.gameModeImage);
+		gameModeImage.setImageResource(imageID);
 	}
 
 
@@ -225,7 +229,7 @@ public class GameWindow extends Activity {
 
 
 	// Changes all the input buttons to be the right size
-	private void resizeButtons(int length) {
+	private void adjustButtons(int length) {
 		Button button00 = (Button) findViewById(R.id.button00);
 		Button button01 = (Button) findViewById(R.id.button01);
 		Button button02 = (Button) findViewById(R.id.button02);

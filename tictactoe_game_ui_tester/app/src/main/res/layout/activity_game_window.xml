@@ -187,7 +187,7 @@
 	<ImageView
 		android:layout_width="151dp"
 		android:layout_height="71dp"
-		android:id="@+id/imageView"
+		android:id="@+id/gameModeImage"
 		android:layout_gravity="left|top"
 		android:src="@drawable/vs_human"
 		android:paddingLeft="-13dp"
