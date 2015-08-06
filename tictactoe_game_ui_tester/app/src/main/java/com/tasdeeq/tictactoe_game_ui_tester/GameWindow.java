@@ -1,18 +1,10 @@
 package com.tasdeeq.tictactoe_game_ui_tester;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.os.Build;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Display;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.view.ViewTreeObserver;
@@ -38,8 +30,11 @@ public class GameWindow extends Activity {
 
 
 	private boolean playerOneMove = true;
+	private boolean userWantsReset = false;
 	String playerOneName = "Player 1";	// default name
 	String playerTwoName = "Player 2"; 	// defualt name
+
+	char [][] grid = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +43,8 @@ public class GameWindow extends Activity {
 
 
 		playerOneMove = true;
+		updateStatus();
+	//	setGameModeImage(1);
 
 		final ImageView gridImage = (ImageView) findViewById(R.id.gridImage);
 		ViewTreeObserver vto = gridImage.getViewTreeObserver();
@@ -57,9 +54,14 @@ public class GameWindow extends Activity {
 			public boolean onPreDraw() {
 				gridImage.getViewTreeObserver().removeOnPreDrawListener(this);
 				int imageWidth = gridImage.getMeasuredWidth();
-				Log.d(TAG, "imageView width : " + imageWidth);		// debug code
+				int imageHeight = gridImage.getMeasuredHeight();
+				//		Log.d(TAG, "imageView width : " + imageWidth);        // debug code
 
-				int buttonLength = getButtonLength(imageWidth) ;
+				int buttonLength;
+				if (imageWidth <= imageHeight)            // Portrait . Critical length = width
+					buttonLength = getButtonLength(imageWidth);
+				else                                     // Landscape. Critical length = height
+					buttonLength = getButtonLength(imageHeight);
 				resizeButtons(buttonLength);
 
 				return true;
@@ -68,24 +70,130 @@ public class GameWindow extends Activity {
 
 	}
 
+	@Override
+	protected void onSaveInstanceState (Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		// Save game mode information here
+		// ..
+		// TO DO
+
+		if (userWantsReset){
+			outState.putBoolean("justDidReset", true);
+			return;
+		}
+
+		outState.putBoolean("isPlayerOneMove", playerOneMove);
+		outState.putCharArray("row0", grid[0]);
+		outState.putCharArray("row1", grid[1]);
+		outState.putCharArray("row2", grid[2]);
+	}
+
+
+	protected void onRestoreInstanceState(Bundle savedState)
+	{
+		System.out.println("TAG, onRestoreInstanceState");
+
+		// Restore game mode information here
+		// ..
+		// TO DO
+
+		boolean justDidReset = savedState.getBoolean("justDidReset");
+		if(justDidReset)
+			return;
+
+		playerOneMove = savedState.getBoolean("isPlayerOneMove");
+		grid[0] = savedState.getCharArray("row0");
+		grid[1] = savedState.getCharArray("row1");
+		grid[2] = savedState.getCharArray("row2");
+
+
+		updateStatus();
+
+
+	}
+
+	private void updateStatus(){
+		playerOneMove = !playerOneMove; // temporary
+		turnChange();					// reverses ^that and sets text
+	}
+
+	public void onResetClick(View v) {
+		// TO DO:
+		// MANAGE THINGS PASSED IN THE ACTIVITY!
+		// SAVE GAME MODE
+		// CLEAN UP
+
+		userWantsReset = true; 	// default is false
+		this.recreate();
+	}
 
 
 	public void buttonOnClick(View v) {
 		int viewId = v.getId();
 
 		Log.d(TAG, "Button clicked : " + viewId);		// debug code
+		v.setBackgroundResource(getImageResource(playerOneMove));
+		v.setEnabled(false);
 
+	// DEBUG CODE ########################################################################
+		String IdAsString = v.getResources().getResourceName(viewId);
+		int givenButtonNameIndex = IdAsString.lastIndexOf("button");
+		String buttonIndexStr = IdAsString.substring(givenButtonNameIndex + 6, givenButtonNameIndex+ 8); // "button" takes 0-5
+		int buttonIndex = Integer.parseInt(buttonIndexStr);
+		int row = buttonIndex / 10 ;
+		int col = buttonIndex % 10;
 
-		placeImage((Button) v);
+		if (playerOneMove)
+			grid[row][col] = 'X';
+		else
+			grid[row][col] = 'O';
+	// ##################################################################################
+
 		turnChange();
-
-
 	}
+
+	private void restoreButtonState(Button button, char piece){
+		if (piece != 'X' && piece != 'O')	// if button is occupied by
+			return; 					// neither player
+
+		button.setEnabled(false);
+		boolean isPlayerOne = (piece == 'X') ;
+		button.setBackgroundResource(getImageResource(isPlayerOne));
+	}
+
 
 
 
 	private void changeButtonBackground(Button button, int imageID){
 		button.setBackgroundResource(imageID);
+	}
+
+	private void setGameModeImage(int gameMode){
+		final String vsHuman = "@drawable/vs_human" ;
+		final String vsAIeasy = "@drawable/vs_computer_a" ;
+		final String vsAImedium = "@drawable/vs_computer_b" ;
+		final String vsAIhard = "@drawable/vs_computer_c" ;
+		String uri  = vsHuman;
+
+		switch (gameMode){
+			case 1:
+				uri = vsAIeasy;
+				break;
+			case 2:
+				uri = vsAImedium;
+				break;
+			case 3:
+				uri = vsAIhard;
+				break;
+			default:
+				break;
+		}
+//		int imageResource = getResources().getIdentifier(vsAImedium, null, getPackageName());
+//		int imageResource = getResources().getIdentifier(uri, null, getPackageName());
+//		ImageView gameModeImage = (ImageView) findViewById(R.id.gameModeImage);
+//		gameModeImage.setImageResource(imageResource);
+	//	gameModeImage.setImageDrawable(getResources().getDrawable(R.drawable.vs_computer_c));
 	}
 
 
@@ -101,11 +209,6 @@ public class GameWindow extends Activity {
 	}
 
 
-
-	private  void placeImage(Button button){
-		button.setBackgroundResource(getImageResource(playerOneMove));
-		button.setEnabled(false);
-	}
 
 	private void turnChange(){
 		playerOneMove = !playerOneMove;
@@ -133,6 +236,7 @@ public class GameWindow extends Activity {
 		Button button21 = (Button) findViewById(R.id.button21);
 		Button button22 = (Button) findViewById(R.id.button22);
 
+		// Adjust button size
 		adjustButtonSize(button00, length, length);
 		adjustButtonSize(button01, length, length);
 		adjustButtonSize(button02, length, length);
@@ -142,6 +246,17 @@ public class GameWindow extends Activity {
 		adjustButtonSize(button20, length, length);
 		adjustButtonSize(button21, length, length);
 		adjustButtonSize(button22, length, length);
+
+		// if there was a saved instance, restore button states
+		restoreButtonState(button00 , grid[0][0]);
+		restoreButtonState(button01 , grid[0][1]);
+		restoreButtonState(button02 , grid[0][2]);
+		restoreButtonState(button10 , grid[1][0]);
+		restoreButtonState(button11 , grid[1][1]);
+		restoreButtonState(button12 , grid[1][2]);
+		restoreButtonState(button20 , grid[2][0]);
+		restoreButtonState(button21 , grid[2][1]);
+		restoreButtonState(button22 , grid[2][2]);
 	}
 
 
