@@ -35,7 +35,8 @@
 			android:id="@+id/button11"
 			android:layout_centerVertical="true"
 			android:layout_centerHorizontal="true"
-			android:onClick="buttonOnClick"/>
+			android:onClick="buttonOnClick"
+			android:focusable="false"/>
 
 		<Button
 			android:layout_width="wrap_content"
@@ -46,7 +47,7 @@
 			android:layout_above="@+id/button11"
 			android:layout_toLeftOf="@+id/button11"
 			android:onClick="buttonOnClick"
-			android:layout_margin="-4dp"/>
+			android:focusable="false"/>
 
 		<Button
 			android:layout_width="wrap_content"
@@ -57,7 +58,8 @@
 			android:layout_above="@+id/button11"
 			android:layout_alignLeft="@+id/button11"
 			android:layout_alignRight="@+id/button11"
-			android:onClick="buttonOnClick"/>
+			android:onClick="buttonOnClick"
+			android:focusable="false"/>
 
 		<Button
 			android:layout_width="wrap_content"
@@ -68,7 +70,8 @@
 			android:layout_toEndOf="@+id/button01"
 			android:layout_above="@+id/button11"
 			android:layout_toRightOf="@+id/button11"
-			android:onClick="buttonOnClick"/>
+			android:onClick="buttonOnClick"
+			android:focusable="false"/>
 
 		<Button
 			android:layout_width="wrap_content"
@@ -80,7 +83,8 @@
 			android:layout_toStartOf="@+id/button11"
 			android:layout_alignBottom="@+id/button11"
 			android:layout_alignTop="@+id/button11"
-			android:onClick="buttonOnClick"/>
+			android:onClick="buttonOnClick"
+			android:focusable="false"/>
 
 		<Button
 			android:layout_width="wrap_content"
@@ -92,7 +96,8 @@
 			android:layout_alignTop="@+id/button11"
 			android:layout_toRightOf="@+id/button11"
 			android:layout_toEndOf="@+id/button11"
-			android:onClick="buttonOnClick"/>
+			android:onClick="buttonOnClick"
+			android:focusable="false"/>
 
 		<Button
 			android:layout_width="wrap_content"
@@ -103,7 +108,8 @@
 			android:layout_below="@+id/button11"
 			android:layout_toLeftOf="@+id/button11"
 			android:layout_toStartOf="@+id/button11"
-			android:onClick="buttonOnClick"/>
+			android:onClick="buttonOnClick"
+			android:focusable="false"/>
 
 		<Button
 			android:layout_width="wrap_content"
@@ -114,7 +120,8 @@
 			android:layout_below="@+id/button11"
 			android:layout_alignLeft="@+id/button11"
 			android:layout_alignRight="@+id/button11"
-			android:onClick="buttonOnClick"/>
+			android:onClick="buttonOnClick"
+			android:focusable="false"/>
 
 		<Button
 			android:layout_width="wrap_content"
@@ -124,7 +131,8 @@
 			android:id="@+id/button22"
 			android:layout_below="@+id/button11"
 			android:layout_toRightOf="@+id/button11"
-			android:onClick="buttonOnClick"/>
+			android:onClick="buttonOnClick"
+			android:focusable="false"/>
 
 
 	</RelativeLayout>
@@ -143,7 +151,8 @@
 		android:shadowDx="3"
 		android:shadowDy="0"
 		android:shadowRadius="5"
-		/>/>
+		android:clickable="true"
+		android:onClick="onResetClick"/>
 
 	<TextView
 		android:layout_width="wrap_content"
@@ -153,11 +162,12 @@
 		android:id="@+id/statusText"
 		android:layout_alignParentTop="true"
 		android:layout_centerHorizontal="true"
-		android:layout_marginTop="28dp"
+		android:layout_marginTop="40dp"
 		android:layout_gravity="center_horizontal|top"
 		android:textStyle="bold"
 		android:textColor="#A33E38"
-		android:textColorHighlight="@color/background_material_light"/>
+		android:textColorHighlight="@color/background_material_light"
+		android:textSize="35dp"/>
 
 	<Button
 		android:text="Main Menu"
@@ -173,6 +183,17 @@
 		android:shadowDx="3"
 		android:shadowDy="0"
 		android:shadowRadius="5"/>
+
+	<ImageView
+		android:layout_width="151dp"
+		android:layout_height="71dp"
+		android:id="@+id/imageView"
+		android:layout_gravity="left|top"
+		android:src="@drawable/vs_human"
+		android:paddingLeft="-13dp"
+		android:paddingRight="-14dp"
+		android:layout_marginTop="-10dp"
+		/>
 
 
 </FrameLayout>

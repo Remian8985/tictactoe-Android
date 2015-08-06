@@ -146,3 +146,6 @@ local.properties
 *.gradle
 *.pro
 *.properties
+tictactoe_game_ui_tester/app/src/main/res/layout/test_frame.xml
+tictactoe_game_ui_tester/app/src/main/res/layout/test_frame.xml
+tictactoe_game_ui_tester/app/src/main/res/layout/test_layout.xml
