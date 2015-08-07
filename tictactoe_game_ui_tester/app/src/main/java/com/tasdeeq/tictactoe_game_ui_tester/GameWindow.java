@@ -36,7 +36,10 @@ public class GameWindow extends Activity {
 	String playerOneName = "Player 1";	// default name
 	String playerTwoName = "Player 2"; 	// defualt name
 
-	char [][] grid = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};
+	final String humanName = "Human";
+	final String aiName = "Computer";
+
+	char [][] grid = {{' ', ' ', ' '}, {' ', ' ', ' '}, {' ', ' ', ' '}};	// empty grid
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +61,14 @@ public class GameWindow extends Activity {
 		// ..
 
 
+		// The buttons are given arbitrary size in XML file
+		// On drawing the grid, we measure the shortest side of the imageView that
+		// is showing the grid image. Length of a square button is about one-third of that.
 		final ImageView gridImage = (ImageView) findViewById(R.id.gridImage);
-		ViewTreeObserver vto = gridImage.getViewTreeObserver();
 
+		// I have absolutely no clue wtf viewTreeObserver thingamajing is for. All I know is
+		// this is the way to go accomplish the above task.
+		ViewTreeObserver vto = gridImage.getViewTreeObserver();
 		// Get critical length of grid image and calculate button lengths from there:
 		vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
 			public boolean onPreDraw() {
@@ -80,68 +88,88 @@ public class GameWindow extends Activity {
 			}
 		});
 
-	}
+	} // end of onCreate
 
+	// Useful in orientation change and other miscellaneous things where onCreate
+	// is called again. We want to save the game state.
+	// If the reset button is pressed, we only save difficulty
+	//										....and perhaps the score.
 	@Override
 	protected void onSaveInstanceState (Bundle outState) {
 		super.onSaveInstanceState(outState);
-
-		// Save game mode information here
-		outState.putInt("GAME_MODE", difficulty);
+		outState.putInt("GAME_MODE", difficulty);	// Save game mode info
 		if (userWantsReset){
 			outState.putBoolean("justDidReset", true);
 			return;
 		}
 
 		outState.putBoolean("isPlayerOneMove", playerOneMove);
+		// Apparently 2d arrays cannot be saved :/
 		outState.putCharArray("row0", grid[0]);
 		outState.putCharArray("row1", grid[1]);
 		outState.putCharArray("row2", grid[2]);
 	}
 
 
+	// Useful in orientation change and other miscellaneous things where onCreate
+	// is called again. We want to restore the game state.
+	// If the reset button is pressed, we only restore difficulty
+	//										....and perhaps the score.
 	protected void onRestoreInstanceState(Bundle savedState)
 	{
-		System.out.println("TAG, onRestoreInstanceState");
-
-		// Restore game mode information here
-		difficulty = savedState.getInt("GAME_MODE");
+		System.out.println("TAG, onRestoreInstanceState");	// DEBUG CODE
+		difficulty = savedState.getInt("GAME_MODE");	// Restore game mode info
 
 		boolean justDidReset = savedState.getBoolean("justDidReset");
 		if(justDidReset)
 			return;
 
 		playerOneMove = savedState.getBoolean("isPlayerOneMove");
+		// Apparently 2d arrays cannot be saved and restored :/
 		grid[0] = savedState.getCharArray("row0");
 		grid[1] = savedState.getCharArray("row1");
 		grid[2] = savedState.getCharArray("row2");
 
-		updateStatus();
+		updateStatus();	// updates whose turn it is.
 	}
 
 
+	// updates the text that says whose turn it is now
 	private void updateStatus(){
 		playerOneMove = !playerOneMove; // temporary
 		turnChange();					// reverses ^that and sets text
 	}
 
+	// Abandon the current game and create a new one with same difficulty
 	public void onResetClick(View v) {
 		userWantsReset = true; 	// default is false
 		this.recreate();
 	}
 
 
+	// When one of the 9 buttons is clicked,
+	// 		- It places the current player's piece
+	//		- Disables the button, it's already been used
+	// 		- Initiates AI move for next turn (if applicable)
+	// 		- Changes the turn for players.
 	public void buttonOnClick(View v) {
 		int viewId = v.getId();
 		Log.d(TAG, "Button clicked : " + viewId);		// debug code
-		v.setBackgroundResource(getImageResource(playerOneMove));
+		v.setBackgroundResource(getImageResource(playerOneMove));	// place the current player's piece
 		v.setEnabled(false);
 
+
+		// Debug code below fills the placeholder 2D array.
+		// I'm not quite sure now (Aug 6,2015) if I'll have it in this activity at all
+		// This will definitely be in AI classes
+
+		// NEED TO UPDATE GRID ON AI CLASS!!!!!		TO DO \\
 	// DEBUG CODE ########################################################################
-		String IdAsString = v.getResources().getResourceName(viewId);
-		int givenButtonNameIndex = IdAsString.lastIndexOf("button");
-		String buttonIndexStr = IdAsString.substring(givenButtonNameIndex + 6, givenButtonNameIndex+ 8); // "button" takes 0-5
-		int buttonIndex = Integer.parseInt(buttonIndexStr);
+
+		// From the button id, find the button row and column.
+		// extract 00, 20, 21 etc from button00, button20, button21 etc
+
+		int buttonIndex = getButtonPos( (Button) v );
 		int row = buttonIndex / 10 ;
 		int col = buttonIndex % 10 ;
 
@@ -154,31 +182,28 @@ public class GameWindow extends Activity {
 		turnChange();
 	}
 
-	private void restoreButtonState(Button button, char piece){
-		if (piece != 'X' && piece != 'O')	// if button is occupied by
-			return; 					// neither player
 
-		button.setEnabled(false);
-		boolean isPlayerOne = (piece == 'X') ;
-		button.setBackgroundResource(getImageResource(isPlayerOne));
+	// From the button id, find the button row and column.
+	// extract 00, 20, 21 etc from button00, button20, button21 etc
+	private int getButtonPos(Button button){
+		String IdAsString = button.getResources().getResourceName(button.getId());
+		int givenButtonNameIndex = IdAsString.lastIndexOf("button");
+		// The two numbers are between 5 and 8 (starts from 6, ends before 8)
+		String buttonIndexStr = IdAsString.substring(givenButtonNameIndex + 6, givenButtonNameIndex+ 8); // "button" takes 0-5
+		int buttonIndex = Integer.parseInt(buttonIndexStr);
+		return buttonIndex;
 	}
 
 
-
-
-	private void changeButtonBackground(Button button, int imageID){
-		button.setBackgroundResource(imageID);
-	}
-
-	private void setGameModeImage(int gameMode){
+	// Sets the difficulty indicator image based on difficulty
+	private void setGameModeImage(final int difficulty){
 		final int vsHuman = R.drawable.vs_human ;
 		final int vsAIeasy = R.drawable.vs_computer_a ;
 		final int vsAImedium = R.drawable.vs_computer_b;
 		final int vsAIhard = R.drawable.vs_computer_c ;
-
 		int imageID = vsHuman;
 
-		switch (gameMode){
+		switch (difficulty){
 			case 1:
 				imageID = vsAIeasy;
 				break;
@@ -197,11 +222,12 @@ public class GameWindow extends Activity {
 	}
 
 
-	private int getImageResource(boolean player1Move){
+	// Returns image resource id for player 1 or 2.
+	private int getImageResource(final boolean playerOneMove){
 		final String noughtStr = "@drawable/nought";
 		final String crossStr = "@drawable/cross";
 		String uri = crossStr; // default , player1 move
-		if (!player1Move)
+		if (!playerOneMove)
 			uri = noughtStr;
 
 		int imageResource = getResources().getIdentifier(uri, null, getPackageName());
@@ -209,12 +235,11 @@ public class GameWindow extends Activity {
 	}
 
 
-
 	private void turnChange(){
-		playerOneMove = !playerOneMove;
-		boolean player1Move = playerOneMove; // making local because i'm paranoid
+		playerOneMove = !playerOneMove;		// toggle player turn
+		// Set player turn indicator text:
 		TextView statusText = (TextView) findViewById(R.id.statusText);
-		if(player1Move){
+		if(playerOneMove){
 			statusText.setText(playerOneName + "\'s turn! ");
 		}
 		else{
@@ -222,6 +247,18 @@ public class GameWindow extends Activity {
 		}
 	}
 
+
+	private void restoreButtonState(Button button, char piece){
+		if (piece != 'X' && piece != 'O') {    // if button is occupied by
+						                    // neither player
+			button.setEnabled(true);
+			return;
+		}
+
+		button.setEnabled(false);
+		boolean isPlayerOne = (piece == 'X') ;
+		button.setBackgroundResource(getImageResource(isPlayerOne));
+	}
 
 
 	// Changes all the input buttons to be the right size
@@ -236,16 +273,21 @@ public class GameWindow extends Activity {
 		Button button21 = (Button) findViewById(R.id.button21);
 		Button button22 = (Button) findViewById(R.id.button22);
 
+
 		// Adjust button size
-		adjustButtonSize(button00, length, length);
-		adjustButtonSize(button01, length, length);
-		adjustButtonSize(button02, length, length);
-		adjustButtonSize(button10, length, length);
-		adjustButtonSize(button11, length, length);
-		adjustButtonSize(button12, length, length);
-		adjustButtonSize(button20, length, length);
-		adjustButtonSize(button21, length, length);
-		adjustButtonSize(button22, length, length);
+		if (length > 0) {
+			// The if condition allows use of this method
+			// just to change button states, not sizes
+			adjustButtonSize(button00, length, length);
+			adjustButtonSize(button01, length, length);
+			adjustButtonSize(button02, length, length);
+			adjustButtonSize(button10, length, length);
+			adjustButtonSize(button11, length, length);
+			adjustButtonSize(button12, length, length);
+			adjustButtonSize(button20, length, length);
+			adjustButtonSize(button21, length, length);
+			adjustButtonSize(button22, length, length);
+		}
 
 		// if there was a saved instance, restore button states
 		restoreButtonState(button00 , grid[0][0]);
@@ -257,6 +299,23 @@ public class GameWindow extends Activity {
 		restoreButtonState(button20 , grid[2][0]);
 		restoreButtonState(button21 , grid[2][1]);
 		restoreButtonState(button22 , grid[2][2]);
+	}
+
+
+	// This method is to be used before initiating AI calculation in separate thread
+	// so that user cannot click another button in the meantime.
+	private void disableAllButtons(){
+		(findViewById(R.id.button00)).setEnabled(false);
+		(findViewById(R.id.button01)).setEnabled(false);
+		(findViewById(R.id.button02)).setEnabled(false);
+
+		(findViewById(R.id.button10)).setEnabled(false);
+		(findViewById(R.id.button11)).setEnabled(false);
+		(findViewById(R.id.button12)).setEnabled(false);
+
+		(findViewById(R.id.button20)).setEnabled(false);
+		(findViewById(R.id.button21)).setEnabled(false);
+		(findViewById(R.id.button22)).setEnabled(false);
 	}
 
 
@@ -348,5 +407,9 @@ public class GameWindow extends Activity {
 		return button;
 	}
 
+
+	private void changeButtonBackground(Button button, int imageID){
+		button.setBackgroundResource(imageID);
+	}
 
 }
