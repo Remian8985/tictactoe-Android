@@ -1,7 +1,6 @@
 package com.tasdeeq.tictactoe_game_ui_tester;
 
 import android.app.Activity;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +14,7 @@ import android.widget.TextView;
 public class GameWindow extends Activity {
 
 	final String TAG = "com.tasdeeq.tictactoe_game_ui_tester";
+
 	// CREATE GAME MODE OBJECTS HERE
 	// ^classes aren't added to project yet
 
@@ -32,6 +32,7 @@ public class GameWindow extends Activity {
 
 	private boolean playerOneMove = true;
 	private boolean userWantsReset = false;
+	int difficulty = -1;		// human (anything not 1,2,3 is human)
 	String playerOneName = "Player 1";	// default name
 	String playerTwoName = "Player 2"; 	// defualt name
 
@@ -42,13 +43,17 @@ public class GameWindow extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game_window);
 
+		Bundle gameData = getIntent().getExtras();
+		if (gameData != null) {
+			difficulty = gameData.getInt("GAME_MODE");
+		} 	// Set the image game mode:
+		// 1:easy, 2:medium, 3:hard, other:human
+		setGameModeImage(difficulty);
 
 		playerOneMove = true;
 		updateStatus();
-		// Set the image game mode:
-		// 1:easy, 2:medium, 3:hard, other:human
-		setGameModeImage(1);		// 1 is placeholder for now
-		// instantiate classes based on ^that
+
+		// instantiate classes based on difficulty
 		// TO DO
 		// ..
 
@@ -82,9 +87,7 @@ public class GameWindow extends Activity {
 		super.onSaveInstanceState(outState);
 
 		// Save game mode information here
-		// ..
-		// TO DO
-
+		outState.putInt("GAME_MODE", difficulty);
 		if (userWantsReset){
 			outState.putBoolean("justDidReset", true);
 			return;
@@ -102,8 +105,7 @@ public class GameWindow extends Activity {
 		System.out.println("TAG, onRestoreInstanceState");
 
 		// Restore game mode information here
-		// ..
-		// TO DO
+		difficulty = savedState.getInt("GAME_MODE");
 
 		boolean justDidReset = savedState.getBoolean("justDidReset");
 		if(justDidReset)
@@ -114,10 +116,9 @@ public class GameWindow extends Activity {
 		grid[1] = savedState.getCharArray("row1");
 		grid[2] = savedState.getCharArray("row2");
 
-
 		updateStatus();
-
 	}
+
 
 	private void updateStatus(){
 		playerOneMove = !playerOneMove; // temporary
@@ -125,11 +126,6 @@ public class GameWindow extends Activity {
 	}
 
 	public void onResetClick(View v) {
-		// TO DO:
-		// MANAGE THINGS PASSED IN THE ACTIVITY!
-		// SAVE GAME MODE
-		// CLEAN UP
-
 		userWantsReset = true; 	// default is false
 		this.recreate();
 	}
@@ -147,7 +143,7 @@ public class GameWindow extends Activity {
 		String buttonIndexStr = IdAsString.substring(givenButtonNameIndex + 6, givenButtonNameIndex+ 8); // "button" takes 0-5
 		int buttonIndex = Integer.parseInt(buttonIndexStr);
 		int row = buttonIndex / 10 ;
-		int col = buttonIndex % 10;
+		int col = buttonIndex % 10 ;
 
 		if (playerOneMove)
 			grid[row][col] = 'X';
