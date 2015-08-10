@@ -40,7 +40,8 @@ public class Interface {
 		if (twoPlayer)
 			twoPlayer() ;	// human gets both turns
 		else 		
-			singlePlayer(difficulty) ; // difficulty does not matter for now
+		//	singlePlayer(difficulty) ; // difficulty does not matter for now
+			singlePlayerB(difficulty) ; // difficulty does not matter for now
 
 		System.out.println("Done! ");
 		in.close(); 
@@ -85,6 +86,79 @@ public class Interface {
 	} // end of singlePlayer(..)
 	
 	
+	
+	
+	public static void singlePlayerB(int difficulty)
+	{
+		boolean player1Turn = setPieces(true);	// determines who gets X and who gets O 
+											// true for single player, false for 2player
+		clearBoard();
+		String player1Name = "Player" ;
+		String player2Name = "Computer" ; 
+		
+		Player player1;
+		Player player2;
+		Player focusedPlayer;	//	Toggle comment here for alternative
+		
+		player1 = new HumanPlayer(playerPiece);
+		player2 = new RandomMoveComputer(aiPiece);
+		
+		
+		int turnCount = 0;
+		while (turnCount < SIZE_OF_BOARD * SIZE_OF_BOARD) {
+			String playerName;
+//			Player focusedPlayer;	//	Toggle comment here for alternative
+			if (player1Turn){
+				focusedPlayer = player1;
+				playerName = player1Name;
+			}
+			else {
+				focusedPlayer = player2;
+				playerName = player2Name;
+			}
+			
+			placePlayerPiece(focusedPlayer);
+			board = focusedPlayer.getBoard(); 
+			if (focusedPlayer.isGameWon()){
+				System.out.println(playerName + " wins!");
+				printBoard(board); 
+				return ;
+			}
+			
+			
+			
+			
+//			if (player1Turn){
+//				placePlayerPiece(player1);
+//				board = player1.getBoard(); 
+//				if (player1.isGameWon()){
+//					System.out.println(player1Name + " wins!");
+//					printBoard(board); 
+//					return ;
+//				}
+//			}
+//			else {
+//				placePlayerPiece(player2);
+//				board = player2.getBoard(); 
+//				if (player2.isGameWon()){
+//					System.out.println(player2Name + " wins!");
+//					printBoard(board); 
+//					return ;
+//				}
+//			}
+			
+			printBoard(board); 
+			player1Turn = !player1Turn;
+			
+			
+			turnCount++; 
+		}
+		
+		
+		printDraw(); // this method should have exited already if someone won
+	} // end of singlePlayerB(..)
+	
+	
 	public static void twoPlayer()
 	{
 		boolean player1Turn = setPieces(false); // false for 2-player, true for single player
@@ -102,6 +176,7 @@ public class Interface {
 			if (player1Turn){
 				placePlayerPiece(player1);
 				if (isPlayerWinner(player1Name , player1.getPiece())){
+					
 					return ;
 				}
 			}
@@ -171,6 +246,35 @@ public class Interface {
 		}
 		System.out.println();
 	}
+	
+	
+	public static void placePlayerPiece(Player player) {
+		Scanner in = new Scanner(System.in);
+		boolean invalidInput = true;
+
+		while (invalidInput) {
+			int row, col; 
+			int position = player.aiPlacePiece(); 
+			if (position <0){			
+				System.out.println("Enter row and column no. where you want to place your mark (Top left is [1,1])");
+	
+				row = in.nextInt() - 1;
+				col = in.nextInt() - 1;
+			}
+			else {
+				row = position /10;
+				col = position %10;
+			}
+			
+			try{
+				player.placePiece(row, col);
+				invalidInput = false;
+			}
+			catch (Exception e){
+				invalidInput = true;
+			}
+		}
+	}
 
 	
 	// This method needs to be ported for android without all these prompts
@@ -202,27 +306,31 @@ public class Interface {
 	}
 	
 	// Checks if the game is won for the given piece
-	public static boolean isGameWon(char piece)
-	{
-		if (board[0][0] == piece){
-			if (board[1][1] == piece && board[2][2] == piece)
+	public static boolean isGameWon(final char piece){
+		if (board[0][0] == piece){								// top-left corner
+			if (board[1][1] == piece && board[2][2] == piece)		// diagonal
 				return true;
-			else if (board[0][1] == piece && board[0][2] == piece)
+			else if (board[0][1] == piece && board[0][2] == piece)	// going right
 				return true;
-			else if (board[1][0] == piece && board[2][0] == piece)
-				return true;
-		}
-		if (board[2][2] == piece){
-			if (board[2][1] == piece && board[2][0] == piece)
-				return true;
-			else if (board[1][2] == piece && board[0][2] == piece)
+			else if (board[1][0] == piece && board[2][0] == piece)	// going down
 				return true;
 		}
-		if (board[0][2] == piece && board[1][1] == piece && board[2][0] == piece){
-			return true;
+		if (board[2][2] == piece){								// bottom-right corner
+			if (board[2][1] == piece && board[2][0] == piece)		// going left
+				return true;
+			else if (board[1][2] == piece && board[0][2] == piece)	// going up
+				return true;
+		}
+		if (piece == board[1][1]){								// middle slot
+			if (board[0][2] == piece && board[2][0] == piece)		// the other diagonal
+				return true;
+			else if (piece == board[1][0] && piece == board[1][2])	// horizontal through and through
+				return true;
+			else if (piece == board[0][1] && piece == board[2][1])	// vertical through and through
+				return true;
 		}
 		
-		return false;
+		return false; 	
 	}
 	
 	

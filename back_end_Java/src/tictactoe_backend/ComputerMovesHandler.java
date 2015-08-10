@@ -91,27 +91,31 @@ public class ComputerMovesHandler {
 	
 	
 	// this is a duplicate from the main class. Trust me, I need to duplicate
-	public boolean isGameWon(char piece)
-	{
-		if (board[0][0] == piece){
-			if (board[1][1] == piece && board[2][2] == piece)
+	public boolean isGameWon(final char piece){
+		if (board[0][0] == piece){								// top-left corner
+			if (board[1][1] == piece && board[2][2] == piece)		// diagonal
 				return true;
-			else if (board[0][1] == piece && board[0][2] == piece)
+			else if (board[0][1] == piece && board[0][2] == piece)	// going right
 				return true;
-			else if (board[1][0] == piece && board[2][0] == piece)
-				return true;
-		}
-		if (board[2][2] == piece){
-			if (board[2][1] == piece && board[2][0] == piece)
-				return true;
-			else if (board[1][2] == piece && board[0][2] == piece)
+			else if (board[1][0] == piece && board[2][0] == piece)	// going down
 				return true;
 		}
-		if (board[0][2] == piece && board[1][1] == piece && board[2][0] == piece){
-			return true;
+		if (board[2][2] == piece){								// bottom-right corner
+			if (board[2][1] == piece && board[2][0] == piece)		// going left
+				return true;
+			else if (board[1][2] == piece && board[0][2] == piece)	// going up
+				return true;
+		}
+		if (piece == board[1][1]){								// middle slot
+			if (board[0][2] == piece && board[2][0] == piece)		// the other diagonal
+				return true;
+			else if (piece == board[1][0] && piece == board[1][2])	// horizontal through and through
+				return true;
+			else if (piece == board[0][1] && piece == board[2][1])	// vertical through and through
+				return true;
 		}
 		
-		return false;
+		return false; 	
 	}
 	
 	
